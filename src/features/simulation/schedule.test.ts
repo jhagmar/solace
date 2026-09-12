@@ -178,6 +178,45 @@ describe("windowsFromEvents / applicationsFromEvents", () => {
       { id: "from-log-2500-0", at: createMsSinceEpoch(2500) },
     ]);
   });
+
+  it("closes an open start at the next start or at last light of that day", () => {
+    expect(
+      windowsFromEvents([
+        startAt(Date.UTC(2026, 7, 14, 10)),
+        startAt(Date.UTC(2026, 7, 14, 12), gothenburg),
+      ]).map((w) => w.id),
+    ).toEqual([
+      `from-log-${Date.UTC(2026, 7, 14, 10)}-0`,
+      `from-log-${Date.UTC(2026, 7, 14, 12)}-1`,
+    ]);
+    const nowhere = createLocation({
+      id: "none",
+      name: "Nowhere",
+      firstAdministrativeDivision: undefined,
+      countryName: undefined,
+      latitude: 0,
+      longitude: 0,
+      timezone: undefined,
+    });
+    const unzoned = windowsFromEvents([
+      {
+        time: createMsSinceEpoch(Date.UTC(2026, 7, 14, 10)),
+        event: { type: "exposureStart", location: nowhere },
+      },
+    ]);
+    expect(unzoned).toHaveLength(1);
+    expect(unzoned[0]?.end).toBeGreaterThan(unzoned[0]!.start);
+  });
+
+  it("drops a zero-length reconstructed pair", () => {
+    expect(windowsFromEvents([startAt(1000), endAt(1000)])).toEqual([]);
+  });
+
+  it("ignores non-removal events when reconstructing wash-offs", () => {
+    expect(removalsFromEvents([startAt(1000), removeAt(2500), applyAt(3000)])).toEqual([
+      { id: "from-log-2500-0", at: createMsSinceEpoch(2500) },
+    ]);
+  });
 });
 
 describe("windowFrom", () => {

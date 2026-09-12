@@ -785,4 +785,62 @@ describe("SimulationStateMachine", () => {
       expect(output.trajectory[0]?.erythemaLoad).toBe(2);
     }
   });
+
+  it("reuses a preloaded load module", async () => {
+    await preloadSimulationLoad();
+    machine.handleVisibilityChange();
+    expect(stateStore.getSimulationOutput().status).toBe("ready");
+  });
+
+  it("skips a window whose initial conditions are after the window end", () => {
+    machine.handleVisibilityChange();
+    const previous = stateStore.getSimulationOutput();
+    stateStore.setSimulationInput({
+      ...stateStore.getSimulationInput(),
+      initialConditions: {
+        time: createMsSinceEpoch(WINDOW_END + 60_000),
+        erythemaLoad: createErythemaLoad(0),
+        effectiveSpf: createSpf(1),
+      },
+    });
+    machine.handleNetworkChange();
+    expect(stateStore.getSimulationOutput()).toEqual(previous);
+  });
+
+  it("compiles a schedule when stamp lists are missing", () => {
+    machine.handleScheduleChange(NO_WINDOWS, {} as SunscreenState);
+    expect(stateStore.getSimulationInput().events).toEqual([]);
+  });
+
+  it("leaves initial conditions unchanged when a history run returns no samples", () => {
+    const held: Array<(trajectory: SimulationState[]) => void> = [];
+    const integrator: LoadIntegrator = {
+      integrate(job, onResult) {
+        held.push((trajectory) => onResult(job, trajectory));
+      },
+    };
+    const history = new SimulationStateMachine(
+      stateStore,
+      mockTimeoutFactory,
+      mockRequestFactory,
+      () => effectiveLocation,
+      () => online,
+      () => visible,
+      () => createMsSinceEpoch(now),
+      integrator,
+    );
+    history.handleVisibilityChange();
+    held[0]?.([
+      {
+        time: createMsSinceEpoch(WINDOW_START),
+        erythemaLoad: createErythemaLoad(0),
+        effectiveSpf: createSpf(1),
+      },
+    ]);
+    now = T0 + 24 * 60 * 60 * 1000;
+    history.handleNetworkChange();
+    const ic = stateStore.getSimulationInput().initialConditions;
+    held[held.length - 1]?.([]);
+    expect(stateStore.getSimulationInput().initialConditions).toEqual(ic);
+  });
 });

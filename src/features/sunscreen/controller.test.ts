@@ -76,11 +76,21 @@ describe("SunscreenController", () => {
       time: { kind: "absolute", atMs: createMsSinceEpoch(2000) },
     });
     expect(state.applications[0]?.settings.spf).toBe(50);
+    const other = controller.apply({
+      spf: createSpf(15),
+      degree: "light",
+      time: { kind: "absolute", atMs: createMsSinceEpoch(4000) },
+    });
+    controller.update(id, {
+      spf: createSpf(50),
+      degree: "light",
+      time: { kind: "absolute", atMs: createMsSinceEpoch(2000) },
+    });
+    expect(state.applications.find((entry) => entry.id === other)?.settings.spf).toBe(15);
     controller.moveStamp(id, createMsSinceEpoch(3000));
     expect(state.applications[0]?.settings.appliedAt).toBe(3000);
     controller.remove(id);
-    expect(state.applications).toEqual([]);
-    expect(state.removals).toEqual([]);
+    expect(state.applications.map((entry) => entry.id)).toEqual([other]);
   });
 
   it("records a wash-off without deleting applications", () => {
@@ -126,5 +136,51 @@ describe("SunscreenController", () => {
     expect(state).toEqual(empty());
     controller.clear();
     expect(state).toEqual(empty());
+  });
+
+  it("updates a wash-off and ignores an unknown stamp move", () => {
+    let state: SunscreenState = empty();
+    const controller = new SunscreenController(
+      () => state,
+      (next) => {
+        state = next;
+      },
+      () => createMsSinceEpoch(0),
+    );
+    const washed = controller.washOff({ kind: "absolute", atMs: createMsSinceEpoch(2000) });
+    const extra = controller.washOff({ kind: "absolute", atMs: createMsSinceEpoch(2500) });
+    controller.updateRemoval(washed, { kind: "absolute", atMs: createMsSinceEpoch(4000) });
+    expect(state.removals.find((entry) => entry.id === washed)?.at).toBe(4000);
+    expect(state.removals.find((entry) => entry.id === extra)?.at).toBe(2500);
+    controller.moveStamp(washed, createMsSinceEpoch(4500));
+    expect(state.removals.find((entry) => entry.id === washed)?.at).toBe(4500);
+    expect(state.removals.find((entry) => entry.id === extra)?.at).toBe(2500);
+    controller.moveStamp("missing", createMsSinceEpoch(5000));
+    expect(state.removals.find((entry) => entry.id === washed)?.at).toBe(4500);
+  });
+
+  it("treats missing lists as empty when adopting", () => {
+    let state = {} as SunscreenState;
+    const controller = new SunscreenController(
+      () => state,
+      (next) => {
+        state = next;
+      },
+      () => createMsSinceEpoch(0),
+    );
+    controller.adoptApplicationsIfEmpty([]);
+    controller.adoptRemovalsIfEmpty([]);
+    expect(state).toEqual({});
+    controller.adoptApplicationsIfEmpty([
+      {
+        id: "a",
+        settings: {
+          spf: createSpf(15),
+          appliedAt: createMsSinceEpoch(1000),
+          degree: "light",
+        },
+      },
+    ]);
+    expect(state.applications).toHaveLength(1);
   });
 });

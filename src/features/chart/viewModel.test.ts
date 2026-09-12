@@ -223,6 +223,7 @@ describe("isUvForecastPending", () => {
     expect(
       isUvForecastPending({ status: "failure", locationId: loc, reason: "x", previous: null }, loc),
     ).toBe(false);
+    expect(isUvForecastPending({ status: "empty" }, undefined)).toBe(false);
   });
 });
 
@@ -251,6 +252,20 @@ describe("createDayChartData", () => {
     expect(data.load.every((p) => p.indoors)).toBe(true);
   });
 
+  it("interpolates load at the day bounds when the trajectory does not sample them", () => {
+    const data = createDayChartData({
+      nowMs: NOON,
+      timeZone: UTC,
+      skinTone: "medium",
+      forecast: null,
+      trajectory: [sample(NOON, 1), sample(NOON + HOUR, 3)],
+      events: [],
+      dayStart: DAY_START,
+    });
+    expect(data.load[0]?.load).toBe(1);
+    expect(data.load[data.load.length - 1]?.load).toBe(3);
+  });
+
   it("treats UV outside the forecast hourly span as 0 and scales to the peak", () => {
     const data = createDayChartData({
       nowMs: NOON,
@@ -272,6 +287,19 @@ describe("createDayChartData", () => {
     expect(data.uvPeak.uvIndex).toBe(12);
     expect(data.uvMax).toBeCloseTo(12 * 1.1);
     expect(data.uvNow).toBeCloseTo(12);
+  });
+
+  it("treats an empty hourly forecast as UV 0", () => {
+    const data = createDayChartData({
+      nowMs: NOON,
+      timeZone: UTC,
+      skinTone: "medium",
+      forecast: { utcOffsetSeconds: createSeconds(0), hourly: [] },
+      trajectory: [],
+      events: [],
+      dayStart: DAY_START,
+    });
+    expect(data.uv.every((point) => point.uvIndex === 0)).toBe(true);
   });
 
   it("clamps uvNow to the ends of the sampled series", () => {
@@ -568,5 +596,32 @@ describe("burnRiskLevelForLoad / nextBurnRiskTransition", () => {
     expect(
       nextBurnRiskTransition(data([point(0, 0), point(100, 0), point(500, 12)], 0), 50),
     ).toEqual({ level: "caution", atMs: 100 + ((4 - 0) / (12 - 0)) * 400 });
+  });
+
+  it("is null for a short series, after the domain, or when a later sample is past the domain", () => {
+    expect(nextBurnRiskTransition(data([point(0, 0)], 0), 0)).toBeNull();
+    expect(nextBurnRiskTransition(data([point(0, 0), point(1_000, 10)], 0), 1_000)).toBeNull();
+    expect(
+      nextBurnRiskTransition(
+        data([point(0, 0), point(50, 0), point(1_000, 0), point(2_000, 10)], 0, {
+          start: 0,
+          end: 1_000,
+        }),
+        50,
+      ),
+    ).toBeNull();
+  });
+
+  it("skips a segment that sits on a threshold at both ends, then leaves it", () => {
+    expect(nextBurnRiskTransition(data([point(0, 4), point(200, 4), point(400, 9)], 4), 0)).toEqual(
+      {
+        level: "danger",
+        atMs: 200 + ((8 - 4) / (9 - 4)) * 200,
+      },
+    );
+  });
+
+  it("starts a crossing from a sample sitting on the threshold", () => {
+    expect(nextBurnRiskTransition(data([point(0, 4), point(200, 9)], 4), 0)?.level).toBe("danger");
   });
 });

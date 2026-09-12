@@ -154,8 +154,11 @@ export function localIsoDate(tz: TimeZone, atMs: number): string {
     month: "2-digit",
     day: "2-digit",
   }).formatToParts(atMs);
-  const get = (type: Intl.DateTimeFormatPartTypes): string =>
-    parts.find((p) => p.type === type)?.value ?? "";
+  const get = (type: Intl.DateTimeFormatPartTypes): string => {
+    const part = parts.find((p) => p.type === type);
+    /* v8 ignore next -- en-US always emits year/month/day parts */
+    return part?.value ?? "";
+  };
   return `${get("year")}-${get("month")}-${get("day")}`;
 }
 

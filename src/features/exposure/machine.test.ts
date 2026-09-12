@@ -395,4 +395,184 @@ describe("ExposureStateMachine: live verbs and edits", () => {
     expect(() => machine.handleVisibilityChange()).not.toThrow();
     expect(() => machine.goIndoors()).not.toThrow();
   });
+
+  it("goIndoors drops a pair shorter than one minute", () => {
+    const now = createMsSinceEpoch(SINCE_UTC + 30_000);
+    const { machine, getState } = createMachine(openWindow(SINCE_UTC), now);
+    machine.goIndoors();
+    expect(getState()).toEqual(EMPTY);
+  });
+
+  it("addWindowAt and addDurationFromNow need a location", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const { machine } = createMachine(EMPTY, now, { location: null });
+    expect(machine.addWindowAt(now)).toBeNull();
+    expect(machine.addDurationFromNow(TAPPED_WINDOW_MS)).toBeNull();
+    expect(machine.addWindow(now, createMsSinceEpoch(now + TAPPED_WINDOW_MS))).toBeNull();
+    expect(machine.coverRestOfDay()).toBeNull();
+  });
+
+  it("coverRestOfDay is a no-op in the last minute of the day", () => {
+    const tz = TEST_LOCATION.timezone!;
+    const dayEnd = lastSecondOfLocalDay(tz, createMsSinceEpoch(SINCE_UTC));
+    const now = createMsSinceEpoch(dayEnd - 30_000);
+    const { machine, getState } = createMachine(EMPTY, now);
+    expect(machine.coverRestOfDay()).toBeNull();
+    expect(getState()).toEqual(EMPTY);
+  });
+
+  it("updateWindow ignores an unknown id and a pair that collapses", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const { machine, getState } = createMachine(openWindow(SINCE_UTC), now);
+    machine.updateWindow("missing", now, createMsSinceEpoch(now + TAPPED_WINDOW_MS));
+    expect(getState().windows).toHaveLength(1);
+    machine.updateWindow("open", now, now);
+    expect(getState().windows[0]?.id).toBe("open");
+  });
+
+  it("closes a short current pair when the location is unset", () => {
+    const now = createMsSinceEpoch(SINCE_UTC + 30_000);
+    const { machine, getState } = createMachine(openWindow(SINCE_UTC), now, { location: null });
+    machine.handleLocationChange();
+    expect(getState()).toEqual(EMPTY);
+  });
+
+  it("drops the old stub when splitting a short pair onto a new location", () => {
+    const now = createMsSinceEpoch(SINCE_UTC + 30_000);
+    const hawaii = createLocation({
+      id: "5856195",
+      name: "Honolulu",
+      firstAdministrativeDivision: undefined,
+      countryName: undefined,
+      latitude: 21.31,
+      longitude: -157.86,
+      timezone: "Pacific/Honolulu",
+    });
+    const { machine, getState } = createMachine(openWindow(SINCE_UTC), now, { location: hawaii });
+    machine.handleLocationChange();
+    expect(getState().windows).toHaveLength(1);
+    expect(getState().windows[0]?.location.id).toBe(hawaii.id);
+  });
+
+  it("drops a stale pair that cannot span a minute after the day clamp", () => {
+    const tz = TEST_LOCATION.timezone!;
+    const start = lastSecondOfLocalDay(tz, createMsSinceEpoch(SINCE_UTC)) - 30_000;
+    const now = createMsSinceEpoch(Date.UTC(2026, 7, 16, 12, 0));
+    const { machine, getState } = createMachine(openWindow(start, start + 3_600_000), now);
+    machine.handleVisibilityChange();
+    expect(getState()).toEqual(EMPTY);
+  });
+
+  it("addWindow plants an explicit pair", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const { machine, getState } = createMachine(EMPTY, now);
+    const end = createMsSinceEpoch(now + TAPPED_WINDOW_MS);
+    expect(machine.addWindow(now, end)).toBeTruthy();
+    expect(getState().windows[0]?.end).toBe(end);
+  });
+
+  it("inserts after an earlier non-overlapping pair", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const morning: OutdoorWindow = {
+      id: "morning",
+      start: createMsSinceEpoch(SINCE_UTC - 3 * TAPPED_WINDOW_MS),
+      end: createMsSinceEpoch(SINCE_UTC - TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const { machine, getState } = createMachine({ windows: [morning] }, now);
+    expect(machine.addDefaultWindow()).toBeTruthy();
+    expect(getState().windows).toHaveLength(2);
+  });
+
+  it("clamps an update that starts inside a neighbour", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const first: OutdoorWindow = {
+      id: "a",
+      start: createMsSinceEpoch(SINCE_UTC),
+      end: createMsSinceEpoch(SINCE_UTC + 3_600_000),
+      location: TEST_LOCATION,
+    };
+    const second: OutdoorWindow = {
+      id: "b",
+      start: createMsSinceEpoch(SINCE_UTC + 4 * 3_600_000),
+      end: createMsSinceEpoch(SINCE_UTC + 5 * 3_600_000),
+      location: TEST_LOCATION,
+    };
+    const { machine, getState } = createMachine({ windows: [first, second] }, now);
+    machine.updateWindow("b", createMsSinceEpoch(SINCE_UTC + 30 * 60_000), second.end);
+    expect(getState().windows.find((w) => w.id === "b")?.start).toBe(first.end);
+  });
+
+  it("uses the device zone when a pair has no timezone", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const bare = createTestLocation(null);
+    const { machine, getState } = createMachine(EMPTY, now, { location: bare });
+    expect(machine.addDefaultWindow()).toBeTruthy();
+    expect(getState().windows[0]?.location.id).toBe(bare.id);
+  });
+
+  it("goIndoors rewrites only the live pair when others exist", () => {
+    const now = createMsSinceEpoch(Date.UTC(2026, 7, 15, 16, 0));
+    const morning: OutdoorWindow = {
+      id: "morning",
+      start: createMsSinceEpoch(SINCE_UTC - 3 * TAPPED_WINDOW_MS),
+      end: createMsSinceEpoch(SINCE_UTC - TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const live: OutdoorWindow = {
+      id: "live",
+      start: createMsSinceEpoch(SINCE_UTC),
+      end: createMsSinceEpoch(SINCE_UTC + 6 * TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const { machine, getState } = createMachine({ windows: [morning, live] }, now);
+    machine.goIndoors();
+    expect(getState().windows.find((window) => window.id === "morning")?.end).toBe(morning.end);
+    expect(getState().windows.find((window) => window.id === "live")?.end).toBe(now);
+  });
+
+  it("addWindow rejects a collapsed pair and sorts free slots among several neighbours", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const morning: OutdoorWindow = {
+      id: "morning",
+      start: createMsSinceEpoch(SINCE_UTC - 3 * TAPPED_WINDOW_MS),
+      end: createMsSinceEpoch(SINCE_UTC - TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const noon: OutdoorWindow = {
+      id: "noon",
+      start: createMsSinceEpoch(SINCE_UTC),
+      end: createMsSinceEpoch(SINCE_UTC + TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const { machine, getState } = createMachine({ windows: [noon, morning] }, now);
+    expect(machine.addWindow(now, now)).toBeNull();
+    expect(machine.addDefaultWindow()).toBeTruthy();
+    expect(getState().windows.length).toBe(3);
+  });
+
+  it("updateWindow sorts more than one neighbour", () => {
+    const now = createMsSinceEpoch(SINCE_UTC);
+    const a: OutdoorWindow = {
+      id: "a",
+      start: createMsSinceEpoch(SINCE_UTC),
+      end: createMsSinceEpoch(SINCE_UTC + TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const b: OutdoorWindow = {
+      id: "b",
+      start: createMsSinceEpoch(SINCE_UTC + 2 * TAPPED_WINDOW_MS),
+      end: createMsSinceEpoch(SINCE_UTC + 3 * TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const c: OutdoorWindow = {
+      id: "c",
+      start: createMsSinceEpoch(SINCE_UTC + 4 * TAPPED_WINDOW_MS),
+      end: createMsSinceEpoch(SINCE_UTC + 5 * TAPPED_WINDOW_MS),
+      location: TEST_LOCATION,
+    };
+    const { machine, getState } = createMachine({ windows: [c, a, b] }, now);
+    machine.updateWindow("b", b.start, createMsSinceEpoch(SINCE_UTC + 10 * TAPPED_WINDOW_MS));
+    expect(getState().windows.find((window) => window.id === "b")?.end).toBe(c.start);
+  });
 });

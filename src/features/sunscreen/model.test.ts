@@ -113,6 +113,38 @@ describe("asSunscreenState", () => {
       applications: [],
       removals: [],
     });
+    expect(asSunscreenState({ foo: 1 })).toBeNull();
+    expect(asSunscreenState({ applications: { id: "a" } })).toEqual({
+      applications: [],
+      removals: [],
+    });
+    expect(
+      asSunscreenState({
+        applications: [null, { id: "", settings: { spf: 30, appliedAt: 1000, degree: "light" } }],
+      }),
+    ).toEqual({ applications: [], removals: [] });
+    expect(
+      asSunscreenState({
+        applications: [{ id: "a", settings: null }],
+      }),
+    ).toEqual({ applications: [], removals: [] });
+    expect(
+      asSunscreenState({
+        applications: [{ id: "a", settings: { spf: 30, appliedAt: 1000 } }],
+      }),
+    ).toEqual({
+      applications: [
+        {
+          id: "a",
+          settings: {
+            spf: createSpf(30),
+            appliedAt: createMsSinceEpoch(1000),
+            degree: "typical",
+          },
+        },
+      ],
+      removals: [],
+    });
   });
 });
 
@@ -135,7 +167,9 @@ describe("latestApplication", () => {
       },
     };
     expect(latestApplication([a, b])?.id).toBe("b");
+    expect(latestApplication([b, a])?.id).toBe("b");
     expect(latestApplication([])).toBeUndefined();
+    expect(latestApplication(undefined)).toBeUndefined();
   });
 });
 
@@ -150,5 +184,25 @@ describe("asSunscreenState removals", () => {
       applications: [],
       removals: [{ id: "r", at: createMsSinceEpoch(1_000) }],
     });
+    expect(asSunscreenState({ applications: [], removals: null })).toEqual({
+      applications: [],
+      removals: [],
+    });
+    expect(
+      asSunscreenState({
+        applications: [],
+        removals: [null, { id: "", at: 1 }, { id: "x", at: -1 }],
+      }),
+    ).toEqual({ applications: [], removals: [] });
+  });
+
+  it("fails closed when reading status throws", () => {
+    expect(
+      asSunscreenState({
+        get status() {
+          throw new Error("corrupt");
+        },
+      }),
+    ).toBeNull();
   });
 });
