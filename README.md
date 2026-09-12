@@ -119,7 +119,7 @@ Sources below were read on the public internet before being cited. Product behav
 
 ## Develop
 
-Node 22 or newer. Package manager: npm. Default locale: `en`.
+Node 26 or newer. Package manager: npm 12 or newer. Default locale: `en`.
 
 ```bash
 npm install

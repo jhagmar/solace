@@ -10,4 +10,4 @@ npm run lint
 npm run format:check
 ```
 
-Node 22 or newer. Use npm. Keep the layering test green. User-visible strings live in `src/shared/ui/messages/`.
+Node 26 or newer. Use npm 12 or newer. Keep the layering test green. User-visible strings live in `src/shared/ui/messages/`.
