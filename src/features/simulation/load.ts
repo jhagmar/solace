@@ -207,6 +207,7 @@ export function loadAtTime(trajectory: readonly SimulationState[], atMs: number)
       return a.erythemaLoad + lambda * (b.erythemaLoad - a.erythemaLoad);
     }
   }
+  /* v8 ignore next -- sorted trajectories always return in the loop */
   return last.erythemaLoad;
 }
 

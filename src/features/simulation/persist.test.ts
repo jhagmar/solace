@@ -118,6 +118,16 @@ describe("asSimulationInput", () => {
     expect(asSimulationInput({ ...validInput, events: {} })).toBeNull();
   });
 
+  it("returns null when the events list cannot be walked", () => {
+    const events = [...rawEvents];
+    Object.defineProperty(events, "flatMap", {
+      value: () => {
+        throw new Error("corrupt");
+      },
+    });
+    expect(asSimulationInput({ ...validInput, events })).toBeNull();
+  });
+
   it("drops corrupt collection entries but keeps the valid ones", () => {
     const result = asSimulationInput({
       ...validInput,

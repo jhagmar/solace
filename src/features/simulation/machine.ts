@@ -396,6 +396,7 @@ export class SimulationStateMachine implements SimulationPort {
   private simulateWindow = (state: SimulationInputState, window: UtcForecastWindow): void => {
     const initialConditions = state.initialConditions;
     if (!initialConditions) {
+      /* v8 ignore next -- evaluate() always plants initial conditions first */
       return;
     }
     const t0 = initialConditions.time;
@@ -470,6 +471,7 @@ export class SimulationStateMachine implements SimulationPort {
       return;
     }
     if (job.generation !== this.simGeneration) {
+      /* v8 ignore next -- a queued replacement is drained before a stale window result */
       return;
     }
     this.store.setSimulationOutput({

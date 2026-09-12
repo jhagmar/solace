@@ -21,7 +21,7 @@ test("main screen smoke and accessibility", async ({ page }) => {
   await expect(openMeteo).toBeVisible();
   await expect(openMeteo).toHaveAttribute("target", "_blank");
   await expect(openMeteo).toHaveAttribute("rel", "noopener noreferrer");
-  await expect(page.getByText("Version 1.3.0.")).toBeVisible();
+  await expect(page.getByText("Version 1.4.0.")).toBeVisible();
   const github = page.getByRole("link", { name: "GitHub" });
   await expect(github).toBeVisible();
   await expect(github).toHaveAttribute("href", "https://github.com/jhagmar/solace");

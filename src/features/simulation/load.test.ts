@@ -230,6 +230,19 @@ describe("simulateLoadTrajectory", () => {
     );
   });
 
+  it("uses the light amount for a light application", () => {
+    const trajectory = simulateLoadTrajectory({
+      t0: createMsSinceEpoch(T0),
+      tEnd: createMsSinceEpoch(T0 + 1000),
+      initial: initial(),
+      events: [apply(T0, 16, "light")],
+      interpolators: interpolators(0),
+      outputStepSeconds: 0,
+    });
+    const at = (time: number) => trajectory.filter((p) => p.time === time).at(-1);
+    expect(at(T0)?.effectiveSpf).toBeCloseTo(16 ** 0.25);
+  });
+
   it("collapses same-time samples to the right limit", () => {
     const trajectory = simulateLoadTrajectory({
       t0: createMsSinceEpoch(T0),
@@ -339,6 +352,17 @@ describe("loadAtTime / firstTimeLoadReaches", () => {
     expect(loadAtTime([initial(T0, 1, 1), initial(T0, 3, 1), initial(T0 + 1000, 5, 1)], T0)).toBe(
       1,
     );
+    expect(
+      loadAtTime(
+        [
+          initial(T0, 0, 1),
+          initial(T0 + 500, 1, 1),
+          initial(T0 + 1000, 2, 1),
+          initial(T0 + 2000, 6, 1),
+        ],
+        T0 + 1500,
+      ),
+    ).toBeCloseTo(4);
   });
 
   it("returns the first instant the load reaches a threshold", () => {

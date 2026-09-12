@@ -71,8 +71,35 @@ describe("persist flush and quota", () => {
     document.dispatchEvent(new Event("pagehide"));
     expect(flush).toHaveBeenCalled();
     flush.mockClear();
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(flush).not.toHaveBeenCalled();
     Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
     document.dispatchEvent(new Event("visibilitychange"));
     expect(flush).toHaveBeenCalled();
+  });
+
+  it("reports a non-quota persist failure", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("denied");
+    });
+    persistStorage?.setItem("solace-test", { state: {}, version: 1 });
+    expect(getPersistFailure()).toEqual({ kind: "unknown" });
+  });
+
+  it("treats DOMException code 22 as quota", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      const error = new DOMException("quota");
+      Object.defineProperty(error, "code", { value: 22 });
+      throw error;
+    });
+    persistStorage?.setItem("solace-test", { state: {}, version: 1 });
+    expect(getPersistFailure()).toEqual({ kind: "quota" });
+  });
+
+  it("removes a persisted key", () => {
+    localStorage.setItem("solace-gone", "1");
+    persistStorage?.removeItem("solace-gone");
+    expect(localStorage.getItem("solace-gone")).toBeNull();
   });
 });

@@ -233,6 +233,7 @@ function thresholdCrossingsOnSegment(
     }
     const lambda = (threshold - a.load) / (b.load - a.load);
     if (lambda <= 0 || lambda > 1) {
+      /* v8 ignore next -- opposite-sign loads already constrain lambda to (0, 1] */
       continue;
     }
     times.push(a.time + lambda * (b.time - a.time));
@@ -468,6 +469,7 @@ function uvAtKnot(
 }
 
 function uvAtTime(uv: readonly UvPoint[], atMs: number): number {
+  /* v8 ignore next -- the day sampler always emits at least two knots */
   if (uv.length === 0) {
     return 0;
   }
@@ -487,6 +489,7 @@ function uvAtTime(uv: readonly UvPoint[], atMs: number): number {
       return a.uvIndex + lambda * (b.uvIndex - a.uvIndex);
     }
   }
+  /* v8 ignore next -- sorted UV knots always return in the loop */
   return last.uvIndex;
 }
 

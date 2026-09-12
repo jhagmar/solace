@@ -9,6 +9,10 @@ describe("formatMessage", () => {
       "Search failed: timeout",
     );
   });
+
+  it("replaces a missing placeholder with an empty string", () => {
+    expect(formatMessage("Hello {name}", {})).toBe("Hello ");
+  });
 });
 
 describe("default catalog", () => {

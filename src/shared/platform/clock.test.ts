@@ -1,6 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createMilliseconds } from "@/shared/domain";
-import { SystemTimeoutFactory } from "@/shared/platform/clock";
+import { SystemTimeoutFactory, systemClock } from "@/shared/platform/clock";
+
+describe("systemClock", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("reads Date.now", () => {
+    vi.spyOn(Date, "now").mockReturnValue(1_700_000_000_000);
+    expect(systemClock()).toBe(1_700_000_000_000);
+  });
+});
 
 describe("SystemTimeoutFactory", () => {
   beforeEach(() => vi.useFakeTimers());

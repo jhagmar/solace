@@ -324,4 +324,31 @@ describe("Store persistence edge cases", () => {
       location,
     });
   });
+
+  it("recent locations rehydration drops invalid entries and keeps a valid list", async () => {
+    useRecentLocationsStore.setState({ recentLocations: { recents: [] } });
+    window.localStorage.setItem(
+      "solace-recent-locations-store",
+      JSON.stringify({
+        state: { recentLocations: { recents: [{ id: 1 }, createTestLocation("ok")] } },
+        version: 0,
+      }),
+    );
+    await useRecentLocationsStore.persist.rehydrate();
+    expect(useRecentLocationsStore.getState().recentLocations.recents.map((r) => r.id)).toEqual([
+      "ok",
+    ]);
+
+    window.localStorage.setItem(
+      "solace-recent-locations-store",
+      JSON.stringify({
+        state: { recentLocations: { recents: [{ id: 1 }] } },
+        version: 0,
+      }),
+    );
+    await useRecentLocationsStore.persist.rehydrate();
+    expect(useRecentLocationsStore.getState().recentLocations.recents.map((r) => r.id)).toEqual([
+      "ok",
+    ]);
+  });
 });

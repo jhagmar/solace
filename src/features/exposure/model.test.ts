@@ -103,8 +103,46 @@ describe("asExposure", () => {
     expect(asExposure({ windows: [{ id: "x", start: 2000, end: 1000 }] })).toEqual({
       windows: [],
     });
+    expect(
+      asExposure({
+        windows: [{ id: "eq", start: 1000, end: 1000, location: STOCKHOLM_JSON }],
+      }),
+    ).toEqual({ windows: [] });
     expect(asExposure({ status: "outside" })).toBeNull();
     expect(asExposure({ status: "outdoors", since: 1000 })).toEqual({ windows: [] });
+    expect(asExposure({ foo: 1 })).toBeNull();
+    expect(asExposure({ windows: [null, { id: "", start: 1, end: 2 }] })).toEqual({
+      windows: [],
+    });
+    expect(
+      asExposure({ windows: [{ id: "w", start: "nope", end: 2, location: STOCKHOLM_JSON }] }),
+    ).toEqual({
+      windows: [],
+    });
+  });
+
+  it("migrates an outdoors pair that cannot span a minute to empty", () => {
+    const since = lastSecondOfLocalDay(
+      createTimeZone("Europe/Stockholm"),
+      Date.UTC(2026, 7, 15, 12),
+    );
+    expect(
+      asExposure({
+        status: "outdoors",
+        since,
+        location: STOCKHOLM_JSON,
+      }),
+    ).toEqual({ windows: [] });
+  });
+
+  it("migrates corrupt outdoors since to empty", () => {
+    expect(
+      asExposure({
+        status: "outdoors",
+        since: -1,
+        location: STOCKHOLM_JSON,
+      }),
+    ).toEqual({ windows: [] });
   });
 
   it("drops leftover reset stamps from persisted JSON", () => {
@@ -116,6 +154,16 @@ describe("asExposure", () => {
     ).toEqual({
       windows: [],
     });
+  });
+
+  it("fails closed when the window list cannot be walked", () => {
+    const windows: unknown[] = [];
+    Object.defineProperty(windows, Symbol.iterator, {
+      value: () => {
+        throw new Error("corrupt");
+      },
+    });
+    expect(asExposure({ windows })).toBeNull();
   });
 });
 
@@ -132,6 +180,7 @@ describe("windowContaining / isOutdoorsAt", () => {
     expect(isOutdoorsAt([window], createMsSinceEpoch(1500))).toBe(true);
     expect(isOutdoorsAt([window], createMsSinceEpoch(2000))).toBe(false);
     expect(windowContaining([window], createMsSinceEpoch(1500))?.id).toBe("w");
+    expect(isOutdoorsAt(undefined, createMsSinceEpoch(1500))).toBe(false);
   });
 });
 
@@ -154,5 +203,30 @@ describe("windowsOnLocalDay", () => {
     expect(windowsOnLocalDay([yesterday, todayWindow], tz, today).map((w) => w.id)).toEqual([
       "today",
     ]);
+    const laterToday: OutdoorWindow = {
+      id: "later",
+      start: createMsSinceEpoch(Date.UTC(2026, 7, 15, 14)),
+      end: createMsSinceEpoch(Date.UTC(2026, 7, 15, 16)),
+      location: stockholm,
+    };
+    expect(windowsOnLocalDay([laterToday, todayWindow], tz, today).map((w) => w.id)).toEqual([
+      "today",
+      "later",
+    ]);
+    expect(windowsOnLocalDay(undefined, tz, today)).toEqual([]);
+    const noZone = {
+      ...todayWindow,
+      id: "no-zone",
+      location: createLocation({
+        id: "x",
+        name: "X",
+        firstAdministrativeDivision: undefined,
+        countryName: undefined,
+        latitude: 0,
+        longitude: 0,
+        timezone: undefined,
+      }),
+    };
+    expect(windowsOnLocalDay([noZone], tz, today).map((w) => w.id)).toEqual(["no-zone"]);
   });
 });

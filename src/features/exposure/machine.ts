@@ -302,12 +302,15 @@ export class ExposureStateMachine implements ExposurePort {
       }
     }
     if (nextEnd - nextStart < MIN_WINDOW_MS) {
+      /* v8 ignore next -- neighbour clamp already rejected sub-minute spans above */
       return null;
     }
     if (localDayNumber(tz, nextStart) !== localDayNumber(tz, nextEnd)) {
+      /* v8 ignore next -- ends are clamped to the start's local day first */
       nextEnd = dayEnd;
     }
     if (nextEnd - nextStart < MIN_WINDOW_MS) {
+      /* v8 ignore next -- dayEnd is always at least a minute after dayStart */
       return null;
     }
     return { start: nextStart, end: nextEnd };
