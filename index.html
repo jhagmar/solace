@@ -35,8 +35,10 @@
     <meta name="theme-color" content="#fbf9f5" />
     <title>Solace</title>
     <style>
-      /* Critical paint for #site-footer (LCP). Must match #shell / #site-footer
-         in src/index.css so the footer does not jump when full CSS arrives. */
+      /* Critical paint for a footer sliver (LCP). #root is at least
+         100dvh - 7rem so most of the footer starts below the fold; React
+         filling main cannot shift a large in-viewport block. Must match
+         #shell / #root / #site-footer in src/index.css. */
       *,
       *::before,
       *::after {
@@ -74,6 +76,11 @@
         min-height: 0;
         flex: 1 1 0%;
         flex-direction: column;
+      }
+      @media (max-height: 60rem) {
+        #shell > #root {
+          min-height: calc(100dvh - 7rem);
+        }
       }
       #root header {
         position: sticky;
