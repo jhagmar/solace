@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script src="/theme-boot.js"></script>
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Personal UV tracker: today's forecast and a burn-risk estimate from skin tone, sunscreen and time outdoors."
+    />
+    <meta name="application-name" content="Solace" />
+    <meta name="apple-mobile-web-app-title" content="Solace" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta property="og:title" content="Solace" />
+    <meta
+      property="og:description"
+      content="Personal UV tracker: today's forecast and a burn-risk estimate from skin tone, sunscreen and time outdoors."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/pwa-512x512.png" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" sizes="180x180" />
+    <link rel="mask-icon" href="/mask-icon.svg" color="#c45000" />
+    <!-- Default light chrome; public/theme-boot.js and useThemeSync overwrite
+         this to follow the in-app preference, not only the OS scheme. -->
+    <meta name="theme-color" content="#fbf9f5" />
+    <title>Solace</title>
+    <style>
+      /* Critical paint for #site-footer (LCP). Must match #shell / #site-footer
+         in src/index.css so the footer does not jump when full CSS arrives. */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html {
+        line-height: 1.5;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        color-scheme: light;
+        background: #fbf9f5;
+        color: #3f362e;
+      }
+      html.dark {
+        color-scheme: dark;
+        background: #17130e;
+        color: #f4f1ea;
+      }
+      body {
+        margin: 0;
+        background: inherit;
+        color: inherit;
+      }
+      #shell {
+        margin-inline: auto;
+        display: flex;
+        min-height: 100dvh;
+        width: 100%;
+        max-width: 28rem;
+        flex-direction: column;
+        padding-inline: 1rem;
+        padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+      }
+      #shell > #root {
+        display: flex;
+        min-height: 0;
+        flex: 1 1 0%;
+        flex-direction: column;
+      }
+      #root header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: calc(max(0.75rem, env(safe-area-inset-top)) + 2.25rem + 0.5rem);
+        margin-inline: -1rem;
+        margin-bottom: 1.25rem;
+        padding-inline: 1rem;
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+        padding-bottom: 0.5rem;
+        background: #fbf9f5;
+      }
+      html.dark #root header {
+        background: #17130e;
+      }
+      #root h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        letter-spacing: -0.025em;
+        line-height: 1.75rem;
+      }
+      #root h1 svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+        color: oklch(0.545 0.185 48);
+      }
+      html.dark #root h1 svg {
+        color: oklch(0.82 0.14 65);
+      }
+      #site-footer {
+        margin-top: 2rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
+        color: oklch(0.42 0.025 60);
+      }
+      html.dark #site-footer {
+        color: oklch(0.68 0.02 75);
+      }
+      #site-footer p {
+        margin: 0;
+      }
+      #site-footer p + p {
+        margin-top: 0.5rem;
+      }
+      #site-footer a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="shell">
+      <div id="root">
+        <header>
+          <h1>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" fill="currentColor" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            solace
+          </h1>
+        </header>
+      </div>
+      <footer id="site-footer">
+        <p>
+          UV forecasts and geocoding from
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>
+          (CC BY 4.0).
+        </p>
+        <p>
+          Solace is not a medical device and does not give medical advice. Burn-risk colours are
+          estimates only. Clothing, shade and sunscreen remain your responsibility.
+        </p>
+        <p>The app can open offline. Forecasts and location search need a network connection.</p>
+        <p>
+          The app runs in your browser. Location search and forecast requests are sent to Open-Meteo;
+          everything else stays on this device.
+        </p>
+        <p>
+          Version %SOLACE_VERSION%. Source is on
+          <a href="https://github.com/jhagmar/solace" target="_blank" rel="noopener noreferrer">GitHub</a>.
+        </p>
+      </footer>
+    </div>
+    <script type="module" src="/src/app/main.tsx"></script>
+  </body>
+</html>

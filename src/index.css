@@ -1,0 +1,196 @@
+@import "tailwindcss";
+@import "shadcn/tailwind.css";
+
+/* Latin-only variable cut. `optional` avoids a late swap (CLS) when the
+   file is still in flight; the hashed woff2 is also <link rel="preload">d. */
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/geist/files/geist-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Geist Variable", sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-load-safe: var(--load-safe);
+  --color-load-moderate: var(--load-moderate);
+  --color-load-danger: var(--load-danger);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(0.982 0.006 85);
+  --foreground: oklch(0.28 0.02 60);
+  --card: oklch(0.995 0.004 85);
+  --card-foreground: oklch(0.28 0.02 60);
+  --popover: oklch(0.995 0.004 85);
+  --popover-foreground: oklch(0.28 0.02 60);
+  /* Light enough to stay warm, dark enough for 4.5:1 on --primary-foreground */
+  --primary: oklch(0.545 0.185 48);
+  --primary-foreground: oklch(0.99 0.005 90);
+  --secondary: oklch(0.945 0.012 80);
+  --secondary-foreground: oklch(0.32 0.02 60);
+  --muted: oklch(0.95 0.01 85);
+  --muted-foreground: oklch(0.42 0.025 60);
+  --accent: oklch(0.94 0.02 80);
+  --accent-foreground: oklch(0.3 0.02 60);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.905 0.012 80);
+  --input: oklch(0.9 0.015 80);
+  --ring: oklch(0.545 0.185 48);
+  --chart-1: oklch(0.7 0.15 145);
+  --chart-2: oklch(0.75 0.15 70);
+  --chart-3: oklch(0.6 0.2 25);
+  --chart-4: oklch(0.556 0 0);
+  --chart-5: oklch(0.269 0 0);
+  /* Load curve: ISO-style green / caution yellow / danger red.
+     Yellow is lighter and ~60° from red so moderate ≠ danger; green is
+     a step darker so the three levels also separate by lightness. */
+  --load-safe: oklch(0.58 0.15 160);
+  --load-moderate: oklch(0.78 0.16 92);
+  --load-danger: oklch(0.55 0.23 25);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.982 0.006 85);
+  --sidebar-foreground: oklch(0.28 0.02 60);
+  --sidebar-primary: oklch(0.545 0.185 48);
+  --sidebar-primary-foreground: oklch(0.99 0.005 90);
+  --sidebar-accent: oklch(0.94 0.02 80);
+  --sidebar-accent-foreground: oklch(0.3 0.02 60);
+  --sidebar-border: oklch(0.905 0.012 80);
+  --sidebar-ring: oklch(0.545 0.185 48);
+}
+
+.dark {
+  --background: oklch(0.19 0.012 70);
+  --foreground: oklch(0.95 0.01 85);
+  --card: oklch(0.235 0.014 70);
+  --card-foreground: oklch(0.95 0.01 85);
+  --popover: oklch(0.235 0.014 70);
+  --popover-foreground: oklch(0.95 0.01 85);
+  --primary: oklch(0.82 0.14 65);
+  --primary-foreground: oklch(0.22 0.02 60);
+  --secondary: oklch(0.28 0.015 70);
+  --secondary-foreground: oklch(0.95 0.01 85);
+  --muted: oklch(0.27 0.012 70);
+  --muted-foreground: oklch(0.68 0.02 75);
+  --accent: oklch(0.28 0.02 70);
+  --accent-foreground: oklch(0.95 0.01 85);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.95 0.02 80 / 12%);
+  --input: oklch(0.95 0.02 80 / 15%);
+  --ring: oklch(0.82 0.14 65);
+  --chart-1: oklch(0.75 0.14 145);
+  --chart-2: oklch(0.8 0.14 75);
+  --chart-3: oklch(0.68 0.19 25);
+  --chart-4: oklch(0.556 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --load-safe: oklch(0.72 0.14 160);
+  --load-moderate: oklch(0.84 0.16 90);
+  --load-danger: oklch(0.68 0.21 22);
+  --sidebar: oklch(0.235 0.014 70);
+  --sidebar-foreground: oklch(0.95 0.01 85);
+  --sidebar-primary: oklch(0.82 0.14 65);
+  --sidebar-primary-foreground: oklch(0.22 0.02 60);
+  --sidebar-accent: oklch(0.28 0.02 70);
+  --sidebar-accent-foreground: oklch(0.95 0.01 85);
+  --sidebar-border: oklch(0.95 0.02 80 / 12%);
+  --sidebar-ring: oklch(0.82 0.14 65);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+    /* Native UI (scrollbars, form controls like the time input) follows the theme */
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+}
+
+/* Static chrome in index.html (outside #root) so LCP is not gated on React. */
+#shell {
+  @apply mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))];
+}
+#shell > #root {
+  @apply flex min-h-0 flex-1 flex-col;
+}
+#root header {
+  @apply sticky top-0 z-20 -mx-4 mb-5 flex min-h-[calc(max(0.75rem,env(safe-area-inset-top))+2.25rem+0.5rem)] items-center justify-between bg-background px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2;
+}
+#root h1 {
+  @apply m-0 flex items-center gap-1.5 text-lg font-semibold tracking-tight;
+}
+#root h1 svg {
+  @apply size-5 shrink-0 text-primary;
+}
+#site-footer {
+  @apply mt-8 space-y-2 text-xs text-muted-foreground;
+}
+#site-footer a {
+  @apply underline decoration-foreground/30 underline-offset-2 hover:text-foreground;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

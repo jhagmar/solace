@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Solace">
+  <!--
+    Solace mark: Lucide's sun (ISC) on the light-theme cream, in primary orange.
+    The glyph sits in the inner ~58% so maskable / iOS crops keep the rays.
+  -->
+  <rect width="512" height="512" fill="#fbf9f5"/>
+  <g
+    fill="none"
+    stroke="#d05500"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    transform="translate(256 256) scale(12.5) translate(-12 -12)"
+  >
+    <circle cx="12" cy="12" r="4" fill="#d05500" stroke="#d05500"/>
+    <path d="M12 2v2"/>
+    <path d="M12 20v2"/>
+    <path d="m4.93 4.93 1.41 1.41"/>
+    <path d="m17.66 17.66 1.41 1.41"/>
+    <path d="M2 12h2"/>
+    <path d="M20 12h2"/>
+    <path d="m6.34 17.66-1.41 1.41"/>
+    <path d="m19.07 4.93-1.41 1.41"/>
+  </g>
+</svg>
