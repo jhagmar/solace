@@ -1,5 +1,11 @@
 # Solace
 
+[![CI](https://github.com/jhagmar/solace/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jhagmar/solace/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/jhagmar/solace/graph/badge.svg?branch=master)](https://codecov.io/gh/jhagmar/solace)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/jhagmar/solace/badge)](https://scorecard.dev/viewer/?uri=github.com/jhagmar/solace)
+[![Lighthouse](https://github.com/jhagmar/solace/actions/workflows/lighthouse.yml/badge.svg)](https://github.com/jhagmar/solace/actions/workflows/lighthouse.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 The running app is at [https://solace.aztex.eu](https://solace.aztex.eu).
 
 **Know your sun.** Solace is a personal UV planner: today’s forecast for a place, plus a burn-risk estimate from your skin, sunscreen, and time outdoors. It is a website you can install. There is no account and no Solace server.

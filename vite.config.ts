@@ -96,6 +96,8 @@ export default defineConfig({
     exclude: ["**/node_modules/**", "**/dist/**", "**/e2e/**"],
     coverage: {
       provider: "v8",
+      reporter: ["text", "lcov"],
+      reportsDirectory: "coverage",
       include: ["src/shared/**/*.ts", "src/features/**/*.ts"],
       exclude: ["**/*.tsx", "**/*.test.ts", "**/*.gen.ts", "**/*.worker.ts", "src/app/compose/**"],
       thresholds: {
