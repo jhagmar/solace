@@ -1,4 +1,6 @@
 import "../index.css";
+import { createMilliseconds } from "@/shared/domain";
+import { timeoutFactory } from "./compose/clock";
 
 // Zod 4 probes `new Function()` to decide whether to JIT-compile schemas.
 // That is an eval CSP violation (`script-src 'self'`). Disable it first.
@@ -13,7 +15,7 @@ if (!root) {
 /** Yield so each dynamic import and the first render are separate tasks (TBT). */
 function yieldToMain(): Promise<void> {
   return new Promise((resolve) => {
-    setTimeout(resolve, 0);
+    timeoutFactory.create(resolve, createMilliseconds(0));
   });
 }
 
