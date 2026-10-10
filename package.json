@@ -35,7 +35,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router": "^1.170.41",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.49.0",
+    "lucide-react": "^1.52.0",
     "odex": "^3.0.0-rc.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
