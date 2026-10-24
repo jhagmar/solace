@@ -34,20 +34,20 @@ Skin tone, sunscreen, outdoor windows, theme, the selected place, recents, and t
 
 The chart’s coloured curve is remaining erythemal load: a planning estimate of how close the day’s outdoor time sits to a burn. Captions use **low**, **caution**, and **danger**.
 
-| Skin tone | Caution (1 MED) | Danger (2 MED) |
-| --- | ---: | ---: |
-| Very fair | 2.0 SED | 4.0 SED |
-| Fair | 2.5 SED | 5.0 SED |
-| Medium | 4.0 SED | 8.0 SED |
-| Olive | 6.0 SED | 12.0 SED |
-| Brown | 8.5 SED | 17.0 SED |
-| Dark brown | 12.0 SED | 24.0 SED |
+| Skin tone  | Caution (1 MED) | Danger (2 MED) |
+| ---------- | --------------: | -------------: |
+| Very fair  |         2.0 SED |        4.0 SED |
+| Fair       |         2.5 SED |        5.0 SED |
+| Medium     |         4.0 SED |        8.0 SED |
+| Olive      |         6.0 SED |       12.0 SED |
+| Brown      |         8.5 SED |       17.0 SED |
+| Dark brown |        12.0 SED |       24.0 SED |
 
 A **minimal erythemal dose (MED)** is the lowest UV dose that produces just-perceptible redness 8–24 hours later on previously unexposed skin ([1], [4]). That is faint pink, not a painful sunburn ([5], [8]). A **standard erythema dose (SED)** is 100 J/m² of UV weighted by the CIE erythema action spectrum ([1], [4]). CIE keeps MED as an observation on a person and SED as the physical unit ([3]). One MED is some number of SED. Solace takes ICNIRP’s indicative unadapted values: 2.0 and 2.5 SED for Types I and II, midpoints of the Type III–V ranges, and 12 SED for Type VI (open-ended “> 10 SED”; ICNIRP’s grouped unadapted figure is 15 SED) ([1]).
 
 **Caution** is 1 MED: you may meet the laboratory definition of erythema. **Danger** is 2 MED: UVB pain models use that dose for clear redness and heat hyperalgesia ([6], [7]). The load axis is fixed at 0–3 MED so those lines stay put; above 3 MED the curve clips.
 
-The **UV Index** is erythemally weighted irradiance on a horizontal, unshaded surface. It is 40 times that irradiance in W/m², so 1 UVI = 25 mW/m² ([2]). One hour at a constant UVI of *U* delivers $0.9 \times U$ SED of ambient dose (90 J/m² per UVI-hour; 1 SED = 100 J/m²) ([1], [2]). One hour at UV 6 is 5.4 SED on that horizontal receiver.
+The **UV Index** is erythemally weighted irradiance on a horizontal, unshaded surface. It is 40 times that irradiance in W/m², so 1 UVI = 25 mW/m² ([2]). One hour at a constant UVI of _U_ delivers $0.9 \times U$ SED of ambient dose (90 J/m² per UVI-hour; 1 SED = 100 J/m²) ([1], [2]). One hour at UV 6 is 5.4 SED on that horizontal receiver.
 
 ## The model
 
@@ -72,21 +72,21 @@ Let $t_0$ be a baseline instant of undamaged, unsunscreened skin.
   \qquad S(t_0)=1
 ```
 
-| Symbol | Value | Why |
-| --- | --- | --- |
-| $\kappa$ | 0.9 SED/h per UVI | Definitional: 1 UVI for one hour is 90 J/m² ([2]); 1 SED is 100 J/m² ([1], [4]). |
-| $k_r$ | $\ln 2 / 40\,\mathrm{h}$ | Diffey’s 40 h half-life for the fading limb of UV-induced erythema ([5]). |
-| $k_s$ | $\ln 2 / 2\,\mathrm{h}$ | Public-health reapplication interval, as a wear-inclusive half-life ([12], [14], [15]). |
+| Symbol   | Value                    | Why                                                                                     |
+| -------- | ------------------------ | --------------------------------------------------------------------------------------- |
+| $\kappa$ | 0.9 SED/h per UVI        | Definitional: 1 UVI for one hour is 90 J/m² ([2]); 1 SED is 100 J/m² ([1], [4]).        |
+| $k_r$    | $\ln 2 / 40\,\mathrm{h}$ | Diffey’s 40 h half-life for the fading limb of UV-induced erythema ([5]).               |
+| $k_s$    | $\ln 2 / 2\,\mathrm{h}$  | Public-health reapplication interval, as a wear-inclusive half-life ([12], [14], [15]). |
 
 Sunscreen does not stack. Apply at $t_a$ sets $S(t_a^+)=S_0^{\alpha}$ from labelled Spf $S_0$ and amount fraction $\alpha$. Wash-off sets $S=1$. Midnight keeps leftover $D$. **Clear the day** restarts $D=0$, $S=1$.
 
 $\alpha$ is the applied amount as a fraction of the ISO 24444 / FDA test amount of 2.00 mg/cm² ([11], [12], [13]). Effective Spf follows $S_0^{\alpha}$: Faurschou & Wulf found an exponential amount–SPF curve in vivo, with 1.0 mg/cm² behaving as the square root of labelled Spf and 0.5 mg/cm² as the fourth root ([9]).
 
-| Amount in the app | $\alpha$ | About |
-| --- | ---: | --- |
-| Thin layer | 0.25 | 0.5 mg/cm², a common beach application ([10], [11]) |
-| Typical amount | 0.50 | 1.0 mg/cm², the upper end of everyday use ([11], [15]) |
-| Recommended amount | 1.00 | 2.0 mg/cm², the pack-test coat ([12], [13]) |
+| Amount in the app  | $\alpha$ | About                                                  |
+| ------------------ | -------: | ------------------------------------------------------ |
+| Thin layer         |     0.25 | 0.5 mg/cm², a common beach application ([10], [11])    |
+| Typical amount     |     0.50 | 1.0 mg/cm², the upper end of everyday use ([11], [15]) |
+| Recommended amount |     1.00 | 2.0 mg/cm², the pack-test coat ([12], [13])            |
 
 Load older than 14 days is treated as zero (product rule: a 40 h half-life leaves a negligible remainder by then ([5])).
 
@@ -105,22 +105,22 @@ Load older than 14 days is treated as zero (product rule: a 40 h half-life leave
 
 Sources below were read on the public internet before being cited. Product behaviour (the ODE, the 0–3 MED axis, no stacking, the 14-day cap) is Solace’s planning model; the papers supply the numbers it uses.
 
-1. International Commission on Non-Ionizing Radiation Protection, in collaboration with ILO and WHO. *Protecting Workers from Ultraviolet Radiation.* ICNIRP 14/2007. Munich: ICNIRP; 2007. MED as just-perceptible erythema 8–24 h after irradiation; 1 SED = 100 J/m²; a UVI of 1.0 is 10% less than one SED per hour; Table 1 indicative unadapted SED ranges; Table 2 unadapted vs adapted MED; upright outdoor sites about 20–60% of ambient (citing Diffey 1999); photosensitizers and anatomical site. [PDF](https://www.icnirp.org/cms/upload/publications/ICNIRPUVWorkers.pdf)
-2. World Health Organization, World Meteorological Organization, United Nations Environment Programme, International Commission on Non-Ionizing Radiation Protection. *Global Solar UV Index: A Practical Guide.* Geneva: WHO; 2002. WHO/SDE/OEH/02.2. UVI defined for a horizontal surface using the CIE erythema action spectrum; $k_{\mathrm{er}} = 40\,\mathrm{m}^2/\mathrm{W}$ (1 UVI = 25 mW/m²). [Record](https://www.who.int/publications/i/item/9241590076) · [PDF](https://iris.who.int/bitstream/handle/10665/42459/9241590076.pdf?sequence=1)
-3. ISO/CIE 17166 / CIE S 007. *Erythema reference action spectrum and standard erythema dose.* SED is the standardized erythemally weighted dose; MED is reserved for observations on people. [CIE record](https://cie.co.at/publications/erythema-reference-action-spectrum-and-standard-erythema-dose-0)
-4. Harrison GI, Young AR. Ultraviolet radiation-induced erythema in human skin. *Methods.* 2002;28(1):14–19. Just-perceptible MED, usually 24 h, on previously unexposed buttock skin; 1 SED = 100 J/m² CIE-weighted; Type IV MED about twice Type I, with heavy overlap across types. [doi:10.1016/S1046-2023(02)00205-0](https://doi.org/10.1016/S1046-2023(02)00205-0)
-5. Diffey B. Erythema and acclimatization following repeated sun exposure: a modelling study. *Photochem Photobiol.* 2021;97(6):1558–1567. Open access. Erythema peaks about 8–12 h after exposure; fade half-life $T_{1/2} = 40$ h from 8 h and 24 h MED data; 1 MED ≈ 15% of maximal redness. [doi:10.1111/php.13466](https://doi.org/10.1111/php.13466)
-6. Lopes DM, McMahon SB. Ultraviolet radiation on the skin: a painful experience? *CNS Neurosci Ther.* 2016;22(2):118–126. UVB 1, 2, and 3 MED produce dose-dependent erythema and mechanical hyperalgesia. [PMC4833175](https://pmc.ncbi.nlm.nih.gov/articles/PMC4833175/)
-7. Rother M, Rother I. Placebo controlled, crossover validation study of oral ibuprofen and topical hydrocortisone-21-acetate for a model of ultraviolet B radiation (UVR)-induced pain and inflammation. *J Pain Res.* 2011;4:357–365. 1–3 MED induce erythema and reduced heat-pain threshold; 2 MED is the practical pain-model dose. [PMC3215515](https://pmc.ncbi.nlm.nih.gov/articles/PMC3215515/)
-8. Ravnbak MH. Objective determination of Fitzpatrick skin type. *Dan Med Bull.* 2010;57(8):B4153. 1 SED = 100 J/m²; self-reported Fitzpatrick type is a poor ranker of MED; non-professionals often ignore painless next-day pink; body-site MED can differ by up to five-fold. [PDF](https://content.ugeskriftet.dk/sites/default/files/scientific_article_files/2018-11/b4153.pdf)
-9. Faurschou A, Wulf HC. The relation between sun protection factor and amount of sunscreen applied in vivo. *Br J Dermatol.* 2007;156(4):716–719. Declared SPF assumes 2 mg/cm²; in vivo the SPF–amount curve is exponential; 1 mg/cm² ≈ square root of labelled SPF, 0.5 mg/cm² ≈ fourth root. [PMID 17493070](https://pubmed.ncbi.nlm.nih.gov/17493070/)
-10. Bech-Thomsen N, Wulf HC. Sunbathers' application of sunscreen is probably inadequate to obtain the sun protection factor assigned to the preparation. *Photodermatol Photoimmunol Photomed.* 1992;9(6):242–244. Beach application averaged 0.5 mg/cm². [PMID 1343224](https://pubmed.ncbi.nlm.nih.gov/1343224/)
-11. Petersen B, Wulf HC. Application of sunscreen — theory and reality. *Photodermatol Photoimmunol Photomed.* 2014;30(2–3):96–101. SPF is tested at 2 mg/cm²; everyday use is about 0.39–1.0 mg/cm². [PMID 24313722](https://pubmed.ncbi.nlm.nih.gov/24313722/)
+1. International Commission on Non-Ionizing Radiation Protection, in collaboration with ILO and WHO. _Protecting Workers from Ultraviolet Radiation._ ICNIRP 14/2007. Munich: ICNIRP; 2007. MED as just-perceptible erythema 8–24 h after irradiation; 1 SED = 100 J/m²; a UVI of 1.0 is 10% less than one SED per hour; Table 1 indicative unadapted SED ranges; Table 2 unadapted vs adapted MED; upright outdoor sites about 20–60% of ambient (citing Diffey 1999); photosensitizers and anatomical site. [PDF](https://www.icnirp.org/cms/upload/publications/ICNIRPUVWorkers.pdf)
+2. World Health Organization, World Meteorological Organization, United Nations Environment Programme, International Commission on Non-Ionizing Radiation Protection. _Global Solar UV Index: A Practical Guide._ Geneva: WHO; 2002. WHO/SDE/OEH/02.2. UVI defined for a horizontal surface using the CIE erythema action spectrum; $k_{\mathrm{er}} = 40\,\mathrm{m}^2/\mathrm{W}$ (1 UVI = 25 mW/m²). [Record](https://www.who.int/publications/i/item/9241590076) · [PDF](https://iris.who.int/bitstream/handle/10665/42459/9241590076.pdf?sequence=1)
+3. ISO/CIE 17166 / CIE S 007. _Erythema reference action spectrum and standard erythema dose._ SED is the standardized erythemally weighted dose; MED is reserved for observations on people. [CIE record](https://cie.co.at/publications/erythema-reference-action-spectrum-and-standard-erythema-dose-0)
+4. Harrison GI, Young AR. Ultraviolet radiation-induced erythema in human skin. _Methods._ 2002;28(1):14–19. Just-perceptible MED, usually 24 h, on previously unexposed buttock skin; 1 SED = 100 J/m² CIE-weighted; Type IV MED about twice Type I, with heavy overlap across types. [doi:10.1016/S1046-2023(02)00205-0](https://doi.org/10.1016/S1046-2023(02)00205-0)
+5. Diffey B. Erythema and acclimatization following repeated sun exposure: a modelling study. _Photochem Photobiol._ 2021;97(6):1558–1567. Open access. Erythema peaks about 8–12 h after exposure; fade half-life $T_{1/2} = 40$ h from 8 h and 24 h MED data; 1 MED ≈ 15% of maximal redness. [doi:10.1111/php.13466](https://doi.org/10.1111/php.13466)
+6. Lopes DM, McMahon SB. Ultraviolet radiation on the skin: a painful experience? _CNS Neurosci Ther._ 2016;22(2):118–126. UVB 1, 2, and 3 MED produce dose-dependent erythema and mechanical hyperalgesia. [PMC4833175](https://pmc.ncbi.nlm.nih.gov/articles/PMC4833175/)
+7. Rother M, Rother I. Placebo controlled, crossover validation study of oral ibuprofen and topical hydrocortisone-21-acetate for a model of ultraviolet B radiation (UVR)-induced pain and inflammation. _J Pain Res._ 2011;4:357–365. 1–3 MED induce erythema and reduced heat-pain threshold; 2 MED is the practical pain-model dose. [PMC3215515](https://pmc.ncbi.nlm.nih.gov/articles/PMC3215515/)
+8. Ravnbak MH. Objective determination of Fitzpatrick skin type. _Dan Med Bull._ 2010;57(8):B4153. 1 SED = 100 J/m²; self-reported Fitzpatrick type is a poor ranker of MED; non-professionals often ignore painless next-day pink; body-site MED can differ by up to five-fold. [PDF](https://content.ugeskriftet.dk/sites/default/files/scientific_article_files/2018-11/b4153.pdf)
+9. Faurschou A, Wulf HC. The relation between sun protection factor and amount of sunscreen applied in vivo. _Br J Dermatol._ 2007;156(4):716–719. Declared SPF assumes 2 mg/cm²; in vivo the SPF–amount curve is exponential; 1 mg/cm² ≈ square root of labelled SPF, 0.5 mg/cm² ≈ fourth root. [PMID 17493070](https://pubmed.ncbi.nlm.nih.gov/17493070/)
+10. Bech-Thomsen N, Wulf HC. Sunbathers' application of sunscreen is probably inadequate to obtain the sun protection factor assigned to the preparation. _Photodermatol Photoimmunol Photomed._ 1992;9(6):242–244. Beach application averaged 0.5 mg/cm². [PMID 1343224](https://pubmed.ncbi.nlm.nih.gov/1343224/)
+11. Petersen B, Wulf HC. Application of sunscreen — theory and reality. _Photodermatol Photoimmunol Photomed._ 2014;30(2–3):96–101. SPF is tested at 2 mg/cm²; everyday use is about 0.39–1.0 mg/cm². [PMID 24313722](https://pubmed.ncbi.nlm.nih.gov/24313722/)
 12. U.S. Food and Drug Administration. 21 CFR 201.327. SPF test application 2 mg/cm²; Drug Facts: “reapply at least every 2 hours.” [eCFR](https://www.ecfr.gov/current/title-21/section-201.327)
-13. ISO 24444:2019. *Cosmetics — Sun protection test methods — In vivo determination of the sun protection factor (SPF).* Amount after spreading $(2.00 \pm 0.05)$ mg/cm² (clause 9.4.7.1). [ISO record](https://www.iso.org/standard/72279.html) · [public text of 9.4.7.1](https://standards.iteh.ai/catalog/standards/iso/a6ec889b-4f67-4dc0-b115-cb75bcd28d0b/iso-24444-2019)
+13. ISO 24444:2019. _Cosmetics — Sun protection test methods — In vivo determination of the sun protection factor (SPF)._ Amount after spreading $(2.00 \pm 0.05)$ mg/cm² (clause 9.4.7.1). [ISO record](https://www.iso.org/standard/72279.html) · [public text of 9.4.7.1](https://standards.iteh.ai/catalog/standards/iso/a6ec889b-4f67-4dc0-b115-cb75bcd28d0b/iso-24444-2019)
 14. World Health Organization. Radiation: Protecting against skin cancer (Q&A). Clothing and shade first; sunscreen SPF 30+; re-apply every two hours, especially after sweating or swimming. [WHO](https://www.who.int/news-room/questions-and-answers/item/radiation-protecting-against-skin-cancer)
 15. American Academy of Dermatology. Sunscreen FAQs. Reapply about every two hours, or after swimming or sweating; many people apply only 20–50% of the labelled amount. [AAD](https://www.aad.org/media/stats-sunscreen)
-16. Gonzalez H, Tarras-Wahlberg N, Strömdahl B, Juzeniene A, Moan J, Larkö O, Rosén A, Wennberg AM. Photostability of commercial sunscreens upon sun exposure and irradiation by ultraviolet lamps. *BMC Dermatol.* 2007;7:1. Several products remained photostable after 120 min of natural sun; others were not. [PMC1831786](https://pmc.ncbi.nlm.nih.gov/articles/PMC1831786/)
+16. Gonzalez H, Tarras-Wahlberg N, Strömdahl B, Juzeniene A, Moan J, Larkö O, Rosén A, Wennberg AM. Photostability of commercial sunscreens upon sun exposure and irradiation by ultraviolet lamps. _BMC Dermatol._ 2007;7:1. Several products remained photostable after 120 min of natural sun; others were not. [PMC1831786](https://pmc.ncbi.nlm.nih.gov/articles/PMC1831786/)
 17. Open-Meteo. Weather Forecast API. `uv_index` / `uv_index_max` follow WMO UV Index guidelines (cloud-aware vs clear-sky fields). [Docs](https://open-meteo.com/en/docs)
 
 ## Develop
